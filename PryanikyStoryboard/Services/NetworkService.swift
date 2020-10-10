@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol NetworkServiceProtocol {
+protocol NetworkServiceProtocol: AnyObject {
     func performHTTPRequest<T: Decodable>(url: String, method: String, _ completion: @escaping (Result<T, NetworkServiceError>) -> ())
 }
 

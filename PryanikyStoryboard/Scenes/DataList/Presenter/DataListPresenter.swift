@@ -13,21 +13,44 @@ protocol DataListVCProtocol: AnyObject {
 }
 
 protocol DataListPresenterProtocol: AnyObject {
-    init(view: DataListVCProtocol, networkService: NetworkServiceProtocol)
+    init(view: DataListVCProtocol, networkService: NetworkServiceProtocol, errorAlertService: ErrorAlertServiceProtocol, imageDownloader: ImageDownloaderProtocol)
     func getList()
+    func prepearingListData()
+    var errorAlertService: ErrorAlertServiceProtocol! { get set }
+    var imageDownloader: ImageDownloaderProtocol! { get set }
     var listData: PryanikyStaticJson? { get set }
+    var prepearedListData: [Element]! { get set }
 }
 
 class DataListPresenter: DataListPresenterProtocol {
     
     weak var view: DataListVCProtocol?  //!
     var networkService: NetworkServiceProtocol!
+    var errorAlertService: ErrorAlertServiceProtocol!
+    var imageDownloader: ImageDownloaderProtocol!
     var listData: PryanikyStaticJson?
+    var prepearedListData: [Element]!
     
-    required init(view: DataListVCProtocol, networkService: NetworkServiceProtocol) {
+    required init(view: DataListVCProtocol, networkService: NetworkServiceProtocol, errorAlertService: ErrorAlertServiceProtocol, imageDownloader: ImageDownloaderProtocol) {
         self.view = view
         self.networkService = networkService
+        self.errorAlertService = errorAlertService
+        self.imageDownloader = imageDownloader
+        prepearedListData = []
         getList()
+    }
+    
+    func prepearingListData() {
+        guard let types = listData?.view else { return }
+        guard let elements = listData?.data else { return }
+        for type in types {
+            for element in elements {
+                if element.name == type {
+                    prepearedListData.append(element)
+                    break
+                }
+            }
+        }
     }
     
     func getList() {
@@ -39,10 +62,9 @@ class DataListPresenter: DataListPresenterProtocol {
                 switch result {
                 case .success(let json):
                     self.listData = json
+                    self.prepearingListData()
                     self.view?.success()
-                //print("Data was decoded. ", json.view.first!)
                 case .failure(let error):
-                    //ErrorAlertService.showErrorAlert(error: error, viewController: self.view)
                     self.view?.failure(error: error)
                 }
                 

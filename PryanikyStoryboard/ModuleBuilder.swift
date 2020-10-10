@@ -15,7 +15,9 @@ class ModuleBuilder: Builder {
     static func createDataListModule() -> UIViewController {
         let view = DataListViewController()
         let networkService = NetworkService()
-        let presenter = DataListPresenter(view: view, networkService: networkService)
+        let errorAlertService = ErrorAlertService()
+        let imageDownloader = ImageDownloader()
+        let presenter = DataListPresenter(view: view, networkService: networkService, errorAlertService: errorAlertService, imageDownloader: imageDownloader)
         view.presenter = presenter
         return view
     }

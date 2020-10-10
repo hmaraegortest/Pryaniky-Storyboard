@@ -7,11 +7,14 @@
 
 import UIKit
 
+protocol SelectedSegmentProtocol {
+    func showSegmentId(segmentId: Int, cellName: String)
+}
+
 class SelectorCell: UITableViewCell {
     
     @IBAction func SegmentedControlSwitched(_ sender: UISegmentedControl) {
-        print("This segmented control (with segmentId: \(sender.selectedSegmentIndex))")
-        print("The segment is in the", String(describing: type(of: self)))
+        delegate?.showSegmentId(segmentId: sender.selectedSegmentIndex, cellName: String(describing: type(of: self)))
     }
     
     @IBOutlet var segmentedControl: UISegmentedControl!
@@ -19,6 +22,7 @@ class SelectorCell: UITableViewCell {
     var presenter: DataListPresenterProtocol!
     var variants: [Variant]!
     var selectedId: Int!
+    var delegate: SelectedSegmentProtocol?
     
     static let cellXib = "SelectorCell"
     static let cell = "SelectorCell"

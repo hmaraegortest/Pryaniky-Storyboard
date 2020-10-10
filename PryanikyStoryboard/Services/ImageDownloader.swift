@@ -7,11 +7,14 @@
 
 import Foundation
 
-class ImageDownloader {
+protocol ImageDownloaderProtocol: AnyObject {
+    func downloadImage(stringURL: String, completionHandler:
+        @escaping (Data) -> ())
+}
+
+class ImageDownloader: ImageDownloaderProtocol {
     
-    private init() { }
-    
-    static func downloadImage(stringURL: String, completionHandler:
+    func downloadImage(stringURL: String, completionHandler:
         @escaping (Data) -> ()) {
         
         DispatchQueue.global().async {

@@ -7,11 +7,13 @@
 
 import UIKit
 
-class ErrorAlertService {
+protocol ErrorAlertServiceProtocol: AnyObject {
+    func showErrorAlert(error: NetworkServiceError, viewController: UIViewController)
+}
+
+class ErrorAlertService: ErrorAlertServiceProtocol {
     
-    private init() { }
-    
-    static func showErrorAlert(error: NetworkServiceError, viewController: UIViewController) {
+    func showErrorAlert(error: NetworkServiceError, viewController: UIViewController) {
         var errorMessage = String()
         switch error{
         case .badURL:

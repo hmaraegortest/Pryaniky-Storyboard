@@ -12,7 +12,6 @@ class DataListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     var presenter: DataListPresenterProtocol!
-    var listData: PryanikyStaticJson!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,13 +24,12 @@ class DataListViewController: UIViewController {
 
 extension DataListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter.listData?.data.count ?? 0
+        presenter.prepearedListData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let element = presenter.listData?.data[indexPath.row] else { return UITableViewCell() }
-        
+        let element = presenter.prepearedListData[indexPath.row]
         let elementType = ElementType(rawValue: element.name)
         
         switch elementType {
@@ -53,16 +51,14 @@ extension DataListViewController: UITableViewDataSource {
             cell.configure(text: text, url: url)
             
             cell.activityIndicator.startAnimating()
-            ImageDownloader.downloadImage(stringURL: url) { (imageData) in
+            presenter.imageDownloader.downloadImage(stringURL: url) { (imageData) in
 
                 DispatchQueue.main.async {
                     cell.activityIndicator.stopAnimating()
                     cell.pictureView.image = UIImage(data: imageData)
                     
                 }
-
             }
-            
             return cell
             
         case .selector:
@@ -72,7 +68,7 @@ extension DataListViewController: UITableViewDataSource {
             let selectedId = (element.data as! SelectorData).selectedId
             let variants = (element.data as! SelectorData).variants
             cell.configure(listOfSelectors: variants, selectedId: selectedId)
-           
+            cell.delegate = self
             return cell
             
         default:
@@ -82,11 +78,9 @@ extension DataListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let element = presenter.listData?.data[indexPath.row] else { return }
+        let element = presenter.prepearedListData[indexPath.row]
         guard let elementType = ElementType(rawValue: element.name) else { return }
-        
-        print("This cell (with cellId: \(indexPath.row)) display", elementType.rawValue.uppercased(), "element" )
-        
+        self.title = "Cell: ”\(elementType.rawValue)”. Cell ID: \(indexPath.row)"
     }
     
 }
@@ -106,6 +100,14 @@ extension DataListViewController: DataListVCProtocol {
     }
     
     func failure(error: NetworkServiceError) {
-        ErrorAlertService.showErrorAlert(error: error, viewController: self)
+        presenter.errorAlertService.showErrorAlert(error: error, viewController: self)
     }
+}
+
+extension DataListViewController: SelectedSegmentProtocol {
+    func showSegmentId(segmentId: Int, cellName: String) {
+        self.title = "Object: ”\(cellName)”. SegmentID: \(segmentId)"
+    }
+    
+    
 }
