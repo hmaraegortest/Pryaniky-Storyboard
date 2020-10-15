@@ -34,7 +34,7 @@ struct Element: Decodable {
             } else if name == "selector", let selectorData = try? container.decode(SelectorData.self, forKey: .data) {
                 data = selectorData
             } else {
-                throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: container.codingPath, debugDescription: "Not a JSON"))
+                data = try container.decode(UnknownData.self, forKey: .data )
             }
         }
     }
@@ -53,6 +53,9 @@ struct PictureData: Decodable {
 struct SelectorData: Decodable {
     let selectedId: Int
     let variants: [Variant]
+}
+
+struct UnknownData: Decodable {
 }
 
 struct Variant: Decodable {

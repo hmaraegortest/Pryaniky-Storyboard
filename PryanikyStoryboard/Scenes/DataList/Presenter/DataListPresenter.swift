@@ -45,7 +45,7 @@ class DataListPresenter: DataListPresenterProtocol {
         guard let elements = listData?.data else { return }
         for type in types {
             for element in elements {
-                if element.name == type {
+                if element.name == type && !(element.data is UnknownData) {
                     prepearedListData.append(element)
                     break
                 }

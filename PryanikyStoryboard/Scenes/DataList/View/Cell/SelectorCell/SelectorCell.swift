@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol SelectedSegmentProtocol {
+protocol SelectedSegmentProtocol: AnyObject {
     func showSegmentId(segmentId: Int, cellName: String)
 }
 
@@ -22,7 +22,7 @@ class SelectorCell: UITableViewCell {
     var presenter: DataListPresenterProtocol!
     var variants: [Variant]!
     var selectedId: Int!
-    var delegate: SelectedSegmentProtocol?
+    weak var delegate: SelectedSegmentProtocol?
     
     static let cellXib = "SelectorCell"
     static let cell = "SelectorCell"
@@ -36,6 +36,7 @@ class SelectorCell: UITableViewCell {
         self.selectedId = selectedId
         
         segmentedControl.removeAllSegments()
+        variants.sort { $0.id < $1.id }
         
         for variant in variants {
             segmentedControl.insertSegment(withTitle: variant.text, at: segmentedControl.numberOfSegments, animated: false)
